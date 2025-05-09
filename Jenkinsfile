@@ -4,13 +4,13 @@ pipeline {
     environment {
         IMAGE_NAME = 'yourdockerhubuser/nodejs-app'
         IMAGE_VERSION = '1.0.0'
-        DOCKER_CREDS = credentials('dockerhub')
+        DOCKER_CREDS = credentials('dockerhub') // ודא ש-Credentials ID הזה קיים
     }
 
     stages {
         stage('Code Checkout') {
             steps {
-                git "https://github.com/Oren1984/Node.js-Docker-app.git"
+                git branch: 'main', url: 'https://github.com/Oren1984/Node.js-Docker-app.git'
             }
         }
 
@@ -22,8 +22,12 @@ pipeline {
 
         stage('Docker Push') {
             steps {
-                sh 'echo $DOCKER_CREDS_PSW | docker login -u $DOCKER_CREDS_USR --password-stdin'
-                sh 'docker push $IMAGE_NAME:$IMAGE_VERSION'
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh '''
+                        echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+                        docker push $IMAGE_NAME:$IMAGE_VERSION
+                    '''
+                }
             }
         }
 
