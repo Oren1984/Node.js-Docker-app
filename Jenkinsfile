@@ -10,7 +10,7 @@ pipeline {
     stages {
         stage('Code Checkout') {
             steps {
-                git 'https://github.com/Oren1984/Node.js-Docker-app.gi
+                git "https://github.com/Oren1984/Node.js-Docker-app.git"
             }
         }
 
